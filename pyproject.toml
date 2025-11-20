@@ -13,5 +13,5 @@ Documentation = "https://github.com/Sean-Bradley/ComfyUI-Remove-Background/wiki"
 
 [tool.comfy]
 PublisherId = "sbcode"
-DisplayName = "Remove Background"
+DisplayName = "ComfyUI Remove Background"
 Icon = "https://avatars.githubusercontent.com/u/59069470"
