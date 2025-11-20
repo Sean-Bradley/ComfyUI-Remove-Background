@@ -9,7 +9,6 @@ Remove background scenery from an image of a person. The output image is saved a
 
   `python_embeded\python -m pip install -r ComfyUI/custom_nodes/comfyui-remove-background/requirements.txt`
 
-
 ## Install Remove Background Custom Node
 
 Install the ComfyUI Remove Background custom node using the manager,
@@ -29,3 +28,9 @@ Or, install using your command/terminal prompt.
    python_embeded\python -m pip install -r ComfyUI/custom_nodes/comfyui-remove-background/requirements.txt
    ```
 5. Restart ComfyUI
+
+## Sample Workflows
+
+![](./docs/example1.jpg)
+
+![](./docs/example2.jpg)
