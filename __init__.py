@@ -1,8 +1,9 @@
-from rembg import remove
+from rembg import new_session, remove
 from PIL import Image
 import torch
 import numpy as np
 
+SESSION = None
 
 class RemoveBackgroundNode:
     @classmethod
@@ -18,25 +19,44 @@ class RemoveBackgroundNode:
     FUNCTION = "remove_bg"
     CATEGORY = "SBCODE"
 
+    def _get_session(self):
+        global SESSION
+        if SESSION is None:
+            SESSION = new_session()
+        return SESSION
+
     def tensor_to_pil(self, tensor):
+        # tensor shape [B, H, W, C]
         if len(tensor.shape) == 4:
             tensor = tensor[0]
-        arr = (tensor.cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
+        arr = tensor.cpu().numpy()
+        arr = (arr * 255).clip(0,255).astype(np.uint8)
         return Image.fromarray(arr)
 
-    def pil_to_tensor(self, pil_img):
+    def pil_to_tensor_image(self, pil_img):
         arr = np.array(pil_img).astype(np.float32) / 255.0
         if arr.ndim == 2:
-            arr = np.expand_dims(arr, axis=-1)
+            # If grayscale, convert to 3-channel so C=3
+            arr = np.stack([arr,arr,arr], axis=-1)
         return torch.from_numpy(arr).unsqueeze(0)
 
-    def remove_bg(self, image):
-        pil_image = self.tensor_to_pil(image)
-        output = remove(pil_image)  # returns RGBA
+    def pil_to_tensor_mask(self, pil_mask):
+        # pil_mask is a single-channel (‘L’) image
+        arr = np.array(pil_mask).astype(np.float32) / 255.0
+        # shape [H, W]
+        tensor = torch.from_numpy(arr).unsqueeze(0)  # shape [1, H, W]
+        return tensor
 
-        rgba_tensor = self.pil_to_tensor(output)
-        alpha = output.split()[-1]
-        mask_tensor = self.pil_to_tensor(alpha)
+    def remove_bg(self, image):
+        session = self._get_session()
+        pil_image = self.tensor_to_pil(image)
+        output = remove(pil_image, session=session)  # RGBA PIL
+
+        rgba_tensor = self.pil_to_tensor_image(output)
+
+        alpha = output.split()[-1]  # PIL single channel
+        mask_tensor = self.pil_to_tensor_mask(alpha)
+        mask_tensor = 1.0 - mask_tensor  # Invert mask: background=1, foreground=0
 
         return (rgba_tensor, mask_tensor)
 

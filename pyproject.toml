@@ -1,5 +1,5 @@
 [project]
-name = "SBCODE"
+name = "ComfyUI Remove Background"
 description = "Remove background scenery from an image of a person. The output image is saved as an RGBA PNG. The alpha channel is included."
 version = "1.0.0"
 license = "Apache License, Version 2.0"
@@ -13,5 +13,5 @@ Documentation = "https://github.com/Sean-Bradley/ComfyUI-Remove-Background/wiki"
 
 [tool.comfy]
 PublisherId = "sbcode"
-DisplayName = "ComfyUI Remove Background"
+DisplayName = "Remove Background"
 Icon = "https://avatars.githubusercontent.com/u/59069470"
