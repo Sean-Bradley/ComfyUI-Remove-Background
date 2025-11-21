@@ -62,9 +62,9 @@ class RemoveBackgroundNode:
 
 
 NODE_CLASS_MAPPINGS = {
-    "RemoveBackground": RemoveBackgroundNode
+    "SBCODERemoveBackground": RemoveBackgroundNode
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "RemoveBackground": "Remove Background"
+    "SBCODERemoveBackground": "Remove Background"
 }
