@@ -5,7 +5,8 @@ import numpy as np
 
 SESSION = None
 
-class RemoveBackgroundNode:
+
+class SBCODERemoveBackgroundNode:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -30,14 +31,14 @@ class RemoveBackgroundNode:
         if len(tensor.shape) == 4:
             tensor = tensor[0]
         arr = tensor.cpu().numpy()
-        arr = (arr * 255).clip(0,255).astype(np.uint8)
+        arr = (arr * 255).clip(0, 255).astype(np.uint8)
         return Image.fromarray(arr)
 
     def pil_to_tensor_image(self, pil_img):
         arr = np.array(pil_img).astype(np.float32) / 255.0
         if arr.ndim == 2:
             # If grayscale, convert to 3-channel so C=3
-            arr = np.stack([arr,arr,arr], axis=-1)
+            arr = np.stack([arr, arr, arr], axis=-1)
         return torch.from_numpy(arr).unsqueeze(0)
 
     def pil_to_tensor_mask(self, pil_mask):
@@ -62,9 +63,9 @@ class RemoveBackgroundNode:
 
 
 NODE_CLASS_MAPPINGS = {
-    "SBCODERemoveBackground": RemoveBackgroundNode
+    "SBCODERemoveBackground": SBCODERemoveBackgroundNode
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "SBCODERemoveBackground": "Remove Background"
+    "SBCODERemoveBackground": "Remove Background Tool"
 }
