@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-remove-background"
 description = "Remove background scenery from an image of a person. The output image is saved as an RGBA PNG. The alpha channel is included."
-version = "1.0.2"
+version = "1.0.3"
 license = "Apache License, Version 2.0"
 dependencies = ["onnxruntime", "rembg"]
 
