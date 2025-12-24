@@ -12,11 +12,12 @@ class SBCODERemoveBackgroundNode:
         return {
             "required": {
                 "image": ("IMAGE",),
+                "background_color": (["white", "grey", "black"], ),
             }
         }
 
-    RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("rgba_image", "alpha_mask")
+    RETURN_TYPES = ("IMAGE", "IMAGE", "MASK")
+    RETURN_NAMES = ("RGB", "RGBA", "Alpha Mask")
     FUNCTION = "remove_bg"
     CATEGORY = "SBCODE"
 
@@ -48,18 +49,31 @@ class SBCODERemoveBackgroundNode:
         tensor = torch.from_numpy(arr).unsqueeze(0)  # shape [1, H, W]
         return tensor
 
-    def remove_bg(self, image):
+    def remove_bg(self, image, background_color):
         session = self._get_session()
         pil_image = self.tensor_to_pil(image)
         output = remove(pil_image, session=session)  # RGBA PIL
 
         rgba_tensor = self.pil_to_tensor_image(output)
 
+        # Compute RGB with custom background
+        rgb = rgba_tensor[..., :3]  # [1, H, W, 3]
+        alpha_channel = rgba_tensor[..., 3:4]  # [1, H, W, 1]
+
+        bg_colors = {
+            "white": [1.0, 1.0, 1.0],
+            "grey": [0.5, 0.5, 0.5],
+            "black": [0.0, 0.0, 0.0]
+        }
+        bg_rgb = torch.tensor(
+            bg_colors[background_color], device=rgba_tensor.device).view(1, 1, 3)
+        rgb_bg = rgb * alpha_channel + bg_rgb * (1.0 - alpha_channel)
+
         alpha = output.split()[-1]  # PIL single channel
         mask_tensor = self.pil_to_tensor_mask(alpha)
         mask_tensor = 1.0 - mask_tensor  # Invert mask: background=1, foreground=0
 
-        return (rgba_tensor, mask_tensor)
+        return (rgb_bg, rgba_tensor, mask_tensor)
 
 
 NODE_CLASS_MAPPINGS = {
